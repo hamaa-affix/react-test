@@ -1,55 +1,70 @@
 /* eslint react-hooks/exhaustive-deps: off*/
-import React, { useEffect, useState } from "react";
-import ColofulMessage from "./components/ColofulMessage";
-import Header from "./layouts/Header";
-const App = () => {
-  // useState状態を定義　リアクティブデータを定義して、第二引数でデータを操作するメソッドを定義する。
-  const [num, setNum] = useState(0);
-  const [faceShowFlag, setFaceShowFlag] = useState(true);
+import React, { useState } from "react";
+import { InputTodo } from "./components/InputTodo";
+import { IncompleteTodo } from "./components/IncompleteTodo";
+import { CompleteTodo } from "./components/CompleteTodo";
+import "./styles.css";
 
-  const onClicCountUp = () => {
-    setNum(num + 1);
-  };
-  const onChengeFace = () => {
-    setFaceShowFlag(!faceShowFlag);
+export const App = () => {
+  const [todoText, setTodoText] = useState("");
+  const [incompleteTodos, setIncompleteTodos] = useState([]);
+  const [completeTodos, setCompleteTodos] = useState([]);
+
+  //input value値の初期化
+  const onChangeTodoText = (event) => setTodoText(event.target.value);
+  //未完成のtodoへプッシュ
+  const pushTodos = () => {
+    if (todoText === "") return;
+    const newTodos = [...incompleteTodos, todoText];
+    setIncompleteTodos(newTodos);
+    setTodoText("");
+    console.log(todoText);
   };
 
-  useEffect(() => {
-    if (num > 0) {
-      if (num % 3 === 0) {
-        faceShowFlag || setFaceShowFlag(true);
-      } else {
-        faceShowFlag && setFaceShowFlag(false);
-      }
-    }
-  }, [num]);
-
-  const contentStlye = {
-    color: "red",
-    fontsize: "18px"
+  //todo削除
+  const deleteTodo = (index) => {
+    const newTodos = [...incompleteTodos];
+    //splice 「第一引数何番目の要素か指定する」、「第二引数にいくつ削除するか」
+    newTodos.splice(index, 1);
+    setIncompleteTodos(newTodos);
   };
-  const testButton = () => {
-    alert();
+
+  //todo完了
+  const completeTodo = (index) => {
+    const newInconpleteTodos = [...incompleteTodos];
+    newInconpleteTodos.splice(index, 1);
+
+    const newCompleteTodos = [...completeTodos, incompleteTodos[index]];
+    setIncompleteTodos(newInconpleteTodos);
+    setCompleteTodos(newCompleteTodos);
+  };
+
+  //return todo
+  const returnTodos = (index) => {
+    const newCompleteTodos = [...completeTodos];
+    newCompleteTodos.splice(index, 1);
+
+    const newInconpleteTodos = [...incompleteTodos, completeTodos[index]];
+    setIncompleteTodos(newInconpleteTodos);
+    setCompleteTodos(newCompleteTodos);
   };
   return (
     <>
-      <Header color="pink">this is Header</Header>
-      <h1 style={contentStlye}>hello react</h1>
-      <p>こんにちはreact</p>
-      <ColofulMessage color="blue">
-        <>
-          <p>My name is react</p>
-          <button onClick={testButton}>react button</button>
-        </>
-      </ColofulMessage>
-      <ColofulMessage color="pink">test</ColofulMessage>
-      <p>{num}</p>
-      <button onClick={onClicCountUp}>カウントアップ</button>
-      <br />
-      {faceShowFlag && <p>😉</p>}
-      <button onClick={onChengeFace}>on/off</button>
+      <InputTodo
+        todoText={todoText}
+        onChange={onChangeTodoText}
+        onClick={pushTodos}
+        disabled={incompleteTodos.length >= 5}
+      />
+      {incompleteTodos.length >= 5 && (
+        <p style={{ color: "red" }}>登録できるtodoは５個までだよ</p>
+      )}
+      <IncompleteTodo
+        incompleteTodos={incompleteTodos}
+        completeTodo={completeTodo}
+        deleteTodo={deleteTodo}
+      />
+      <CompleteTodo completeTodos={completeTodos} returnTodos={returnTodos} />
     </>
   );
 };
-
-export default App;
