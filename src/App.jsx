@@ -1,7 +1,7 @@
 /* eslint react-hooks/exhaustive-deps: off*/
 import React, { useEffect, useState } from "react";
 import ColofulMessage from "./components/ColofulMessage";
-
+import Header from "./layouts/Header";
 const App = () => {
   // useState状態を定義　リアクティブデータを定義して、第二引数でデータを操作するメソッドを定義する。
   const [num, setNum] = useState(0);
@@ -33,6 +33,7 @@ const App = () => {
   };
   return (
     <>
+      <Header color="pink">this is Header</Header>
       <h1 style={contentStlye}>hello react</h1>
       <p>こんにちはreact</p>
       <ColofulMessage color="blue">
